@@ -89,8 +89,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let start = dotNodes[0]
         let end = dotNodes[1]
         
-        print(start.position)
-        print(end.position)
+//        print(start.position)
+//        print(end.position)
         
         let distance = sqrt(
             pow(end.position.x - start.position.x, 2) +
@@ -98,7 +98,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             pow(end.position.z - start.position.z, 2)
         )
         
-        updateText(text: "\(distance)", atPosition: end.position)
+        let distanceInInches = round(distance * 39.3701)
+        let distanceInFeet = Int(distanceInInches / 12)
+        let remainderInches = Int(distanceInInches.truncatingRemainder(dividingBy: 12).rounded())
+        
+        updateText(text: "\(distanceInFeet)' \(remainderInches)\"", atPosition: end.position)
         
     }
     
@@ -115,6 +119,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         textNode.position = SCNVector3(position.x, position.y + 0.01, position.z)
         
         textNode.scale = SCNVector3(0.01, 0.01, 0.01)
+        
+        // The following section will align your text in the direction you're looking:
+        if let camera = sceneView.pointOfView {
+            textNode.orientation = camera.orientation
+        }
         
         sceneView.scene.rootNode.addChildNode(textNode)
         
